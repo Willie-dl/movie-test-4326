@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Search Results</title>
+</head>
+<body>
+    <h1>Search Results</h1>
+    {% if movies %}
+        <ul>
+            {% for movie in movies %}
+                <li>
+                    {{ movie.Title }} ({{ movie.Year }})
+                    
+                    <!--add to watchlist button-->
+                    <form action="{{ url_for('add_to_watchlist', movie_id=movie.imdbID) }}" method="post" style="display: inline;">
+                        <input type="hidden" name="list_type" value="watchlist">
+                        <button type="submit">Add to Watchlist</button>
+                    </form>
+                    
+                    <!--plan to watch button -->
+                    <form action="{{ url_for('add_to_watchlist', movie_id=movie.imdbID) }}" method="post" style="display: inline;">
+                        <input type="hidden" name="list_type" value="plan">
+                        <button type="submit">Add to Plan-to-Watch</button>
+                    </form>
+                    
+                    <!--for to add review-->
+                    <form action="{{ url_for('add_review', movie_id=movie.imdbID) }}" method="post" style="display: inline;">
+                        <input type="text" name="review_text" placeholder="Write a review" required>
+                        <button type="submit">Add Review</button>
+                    </form>
+                </li>
+            {% endfor %}
+        </ul>
+    {% else %}
+        <p>No results found.</p>
+    {% endif %}
+</body>
+</html>

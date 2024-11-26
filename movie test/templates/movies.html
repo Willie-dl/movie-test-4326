@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Movie Watchlist</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='movies.css') }}">
+</head>
+<body>
+    <div class="container">
+        <h1>Featured Movies</h1>
+
+        <!--OMDb Search Form -->
+        <form action="{{ url_for('movies') }}" method="get">
+            <input type="text" name="query" placeholder="Search OMDb for a movie" value="{{ query }}" required>
+            <button type="submit">Search OMDb</button>
+        </form>
+
+        <!--OMDb Search Results -->
+        <div class="movies-list">
+            {% for movie in movies %}
+            <div class="movie-card">
+                <!--Movie title as a link to the movie's page -->
+                <h2>
+                    <a href="{{ url_for('movie_detail', imdb_id=movie.imdbID) }}">
+                        {{ movie.Title }} ({{ movie.Year }})
+                    </a>
+                </h2>
+                {% if movie.Poster != "N/A" %}
+                    <img src="{{ movie.Poster }}" alt="{{ movie.Title }}" class="movie-image">
+                {% else %}
+                    <img src="{{ url_for('static', filename='placeholder.jpg') }}" alt="No image available" class="movie-image">
+                {% endif %}
+
+                <!--button to add the movie to the watchlist -->
+                <form action="{{ url_for('add_to_watchlist', imdb_id=movie.imdbID) }}" method="post">
+                    <input type="hidden" name="category" value="watchlist">  <!-- Category set to 'watchlist' -->
+                    <button type="submit" class="add-btn">Add to Watchlist</button>
+                </form>
+
+                <!-- button to add the movie to the plan to watch list -->
+                <form action="{{ url_for('add_to_plan', imdb_id=movie.imdbID) }}" method="post">
+                    <button type="submit" class="add-btn">Add to Plan to Watch</button>
+                </form>
+            </div>
+            {% endfor %}
+        </div>
+
+        <!-- controls for pages -->
+        <div class="pagination">
+            {% if page > 1 %}
+                <a href="{{ url_for('movies', page=page-1, query=query) }}" class="pagination-btn">Previous</a>
+            {% endif %}
+            
+            <span>Page {{ page }} of {{ total_pages }}</span>
+            
+            {% if page < total_pages %}
+                <a href="{{ url_for('movies', page=page+1, query=query) }}" class="pagination-btn">Next</a>
+            {% endif %}
+        </div>
+    </div>
+</body>
+</html>

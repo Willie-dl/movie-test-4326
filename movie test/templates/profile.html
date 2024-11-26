@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Your Profile</title>
+</head>
+<body>
+    <h1>Your Profile</h1>
+
+    <!--watchlist -->
+    <section>
+        <h2>Watchlist</h2>
+        {% if watchlist %}
+            <ul>
+                {% for title, movie_imdb_id in watchlist %}
+                    <li>
+                        <!-- Link to movie detail using IMDb ID -->
+                        <a href="{{ url_for('movie_detail', imdb_id=movie_imdb_id) }}">
+                            <strong>{{ title }}</strong>
+                        </a>
+                        <!-- Remove from Watchlist button -->
+                        <form action="{{ url_for('remove_from_watchlist', imdb_id=movie_imdb_id) }}" method="post" style="display: inline;">
+                            <button type="submit" class="btn btn-danger">Remove from Watchlist</button>
+                        </form>
+                    </li>
+                {% endfor %}
+            </ul>
+        {% else %}
+            <p>Your watchlist is empty.</p>
+        {% endif %}
+    </section>
+
+    <!--plan to Watch -->
+    <section>
+        <h2>Plan to Watch</h2>
+        {% if plan_to_watch %}
+            <ul>
+                {% for title, movie_imdb_id in plan_to_watch %}
+                    <li>
+                        <!-- Link to movie detail using IMDb ID -->
+                        <a href="{{ url_for('movie_detail', imdb_id=movie_imdb_id) }}">
+                            <strong>{{ title }}</strong>
+                        </a>
+                        <!-- Remove from Plan to Watch button -->
+                        <form action="{{ url_for('remove_from_plan', imdb_id=movie_imdb_id) }}" method="post" style="display: inline;">
+                            <button type="submit" class="btn btn-danger">Remove from Plan to Watch</button>
+                        </form>
+                    </li>
+                {% endfor %}
+            </ul>
+        {% else %}
+            <p>Your plan-to-watch list is empty.</p>
+        {% endif %}
+    </section>
+
+    <!--reviews -->
+    <section>
+        <h2>Your Reviews</h2>
+        {% if reviews %}
+            <ul>
+                {% for title, movie_imdb_id, review_text in reviews %}
+                    <li>
+                        <!-- Link to movie detail using IMDb ID -->
+                        <a href="{{ url_for('movie_detail', imdb_id=movie_imdb_id) }}">
+                            <strong>{{ title }}</strong>
+                        </a>: {{ review_text }}
+                        <form action="{{ url_for('delete_review', movie_id=movie_imdb_id) }}" method="post" style="display: inline;">
+                            <button type="submit" class="btn btn-danger">Delete Review</button>
+                        </form>
+                    </li>
+                {% endfor %}
+            </ul>
+        {% else %}
+            <p>You haven't reviewed any movies yet.</p>
+        {% endif %}
+    </section>
+
+    <!-- go back home -->
+    <a href="{{ url_for('home') }}">Back to Home</a>
+</body>
+</html>

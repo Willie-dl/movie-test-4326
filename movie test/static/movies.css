@@ -1,0 +1,135 @@
+/* Basic styling for the container */
+.container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 20px;
+}
+
+/* Styling for the movie list */
+.movies-list {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 20px; /* Space between cards */
+}
+
+/* Individual movie card styling */
+.movie-card {
+    background-color: #fff;
+    border-radius: 10px;
+    box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.1);
+    width: 220px; /* Fixed width for uniformity */
+    padding: 15px;
+    text-align: center;
+    position: relative;
+    display: flex;
+    flex-direction: column; /* Stack items vertically */
+}
+
+/* Genre styling */
+.movie-genre {
+    background-color: #007BFF;
+    color: #fff;
+    padding: 5px;
+    border-radius: 5px;
+    position: absolute;
+    top: 10px;
+    left: 10px;
+}
+
+/* Image styling */
+.movie-image {
+    width: 100%;
+    height: auto;
+    border-radius: 5px;
+    margin-bottom: 10px;
+}
+
+/* Favorites button styling */
+.favorite-btn {
+    background-color: #28a745;
+    color: white;
+    border: none;
+    padding: 10px;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: background-color 0.3s;
+}
+
+.favorite-btn:hover {
+    background-color: #218838;
+}
+
+/* Rating stars styling */
+.rating {
+    margin-top: 10px;
+    display: flex; /* Use flexbox to align items horizontally */
+    align-items: center; /* Vertically center the items */
+}
+
+.rate-label {
+    margin-right: 10px; /* Space between the label and stars */
+    color: lightgray; /* Lighter color for the label */
+    font-weight: 500; /* Optional: make the text slightly bolder */
+}
+
+.stars {
+    cursor: pointer;
+}
+
+.star {
+    font-size: 24px; /* Size of stars */
+    color: lightgrey; /* Default star color */
+}
+
+.star.selected {
+    color: gold; /* Color for selected stars */
+}
+
+.description-container {
+    position: relative; /* Allows for absolute positioning of child elements */
+    flex-grow: 1; /* Allow the description to grow */
+}
+
+/* Movie description styling with line clamping */
+.movie-description {
+    display: block; /* Normal block display */
+    overflow: hidden; /* Hide overflow */
+    text-overflow: ellipsis; /* Show ellipsis for overflow */
+    line-height: 1.5; /* Set line height */
+    max-height: 4.5em; /* Max height to accommodate 3 lines */
+    margin-bottom: 10px; /* Space after description */
+    transition: opacity 0.3s; /* Smooth transition for opacity */
+}
+
+/* Add space after the favorites button */
+.favorites-rating {
+    margin-top: 15px; /* Space between description and favorites button */
+}
+
+/* Edit button styling */
+.edit-btn {
+    background-color: #6a6666; /* Dark gray background */
+    color: white;
+    padding: 5px 10px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    text-decoration: none;
+    position: absolute; /* Positioned over the description */
+    top: 50%; /* Center vertically */
+    left: 50%; /* Center horizontally */
+    transform: translate(-50%, -50%); /* Shift back by half its width and height to center */
+    opacity: 0; /* Initially hidden */
+    transition: opacity 0.3s; /* Smooth transition */
+}
+
+.description-container:hover .edit-btn {
+    opacity: 1; /* Show the edit button on hover */
+}
+
+.description-container:hover .movie-description {
+    /*max-height: none; /* Remove max height on hover */
+    /*overflow: visible; /* Show all text when hovered */
+    white-space: normal; /* Allow normal wrapping on hover */
+    opacity: 0.5; /* Lower opacity of the description on hover */
+}

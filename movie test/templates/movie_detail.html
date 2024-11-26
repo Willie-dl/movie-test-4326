@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>{{ movie.title }}</title>
+</head>
+<body>
+    <h1>{{ movie.title }}</h1>
+    <img src="{{ movie.poster }}" alt="{{ movie.title }}">
+    <p><strong>Genre:</strong> {{ movie.genre }}</p>
+    <p><strong>Release Year:</strong> {{ movie.release_year }}</p>
+    <p><strong>Description:</strong> {{ movie.description }}</p>
+
+    <h2>User Reviews</h2>
+
+    <!-- reviews -->
+    {% if reviews and reviews|length > 0 %}
+        <ul>
+            {% for review in reviews %}
+                <li><strong>{{ review[0] }}:</strong> {{ review[1] }}</li>
+            {% endfor %}
+        </ul>
+    {% else %}
+        <p>No reviews yet. Be the first to add one!</p>
+    {% endif %}
+
+    <h2>Add Your Review</h2>
+    <form action="{{ url_for('add_review', imdb_id=movie.imdb_id) }}" method="post">
+        <textarea name="review_text" placeholder="Write your review here" required></textarea>
+        <button type="submit">Submit Review</button>
+    </form>
+
+    <a href="{{ url_for('movies') }}">Back to Movie List</a>
+</body>
+</html>
