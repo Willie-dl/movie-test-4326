@@ -23,6 +23,19 @@
         {% endif %}
     </div>
 
+    <!-- show message -->
+    {% with messages = get_flashed_messages(with_categories=true) %}
+        {% if messages %}
+            <div class="flash-messages">
+            {% for category, message in messages %}
+                <div class="alert alert-{{ category }}">
+                {{ message }}
+                </div>
+            {% endfor %}
+            </div>
+        {% endif %}
+    {% endwith %}
+
     <!-- Container for both forms -->
     <div class="form-container">
         <!-- Search box for OMDb -->
@@ -31,17 +44,6 @@
             <input type="text" name="query" placeholder="e.g., Spiderman" required>
             <button type="submit">Search</button>
         </form>
-
-         <!-- show message -->
-         {% with messages = get_flashed_messages(with_categories=true) %}
-         {% if messages %}
-             <ul>
-                 {% for category, message in messages %}
-                     <li class="{{ category }}">{{ message }}</li>
-                 {% endfor %}
-             </ul>
-         {% endif %}
-         {% endwith %}
 
         <!-- IMDb ID form to add or update a movie -->
         <form action="{{ url_for('add_or_update_movie') }}" method="post">

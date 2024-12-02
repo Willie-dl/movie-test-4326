@@ -15,9 +15,18 @@
             <button type="submit">Search OMDb</button>
         </form>
 
-        <!-- Back button -->
-        <div class="back-button">
-            <a href="{{ url_for('home') }}">Back to Home</a>
+
+        <!-- links -->
+        <div> 
+            <a href="{{ url_for('home') }}">Home</a> |
+            
+            {% if 'user_id' in session %}
+                <a href="{{ url_for('profile') }}">Profile</a> |
+                <a href="{{ url_for('logout') }}">Logout</a>
+            {% else %}
+                <a href="{{ url_for('login') }}">Login</a> | 
+                <a href="{{ url_for('register') }}">Register</a>
+            {% endif %}
         </div>
 
         <!--OMDb Search Results -->

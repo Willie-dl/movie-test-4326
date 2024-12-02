@@ -87,28 +87,42 @@ form button:hover {
 }
 
 /* Flash message styles */
+/* Style for flash messages */
 .flash-messages {
     margin: 20px 0;
-    color: #e74c3c;
-    font-weight: bold;
-}
-
-.flash-messages ul {
-    list-style: none;
-    padding: 0;
-}
-
-.flash-messages li {
-    background-color: #fbe9e7;
     padding: 10px;
-    border: 1px solid #e57373;
     border-radius: 5px;
-    margin: 5px 0;
+    width: 100%;
 }
 
-/* Footer styles */
-footer {
-    margin-top: 20px;
-    font-size: 0.9em;
-    color: #777;
+.flash-messages .alert {
+    padding: 15px;
+    font-size: 16px;
+    border-radius: 5px;
+    margin-bottom: 15px;
 }
+
+.flash-messages .alert-success {
+    background-color: #28a745;
+    color: white;
+    border: 1px solid #28a745;
+}
+
+.flash-messages .alert-danger {
+    background-color: #dc3545;
+    color: white;
+    border: 1px solid #dc3545;
+}
+
+.flash-messages .alert-info {
+    background-color: #17a2b8;
+    color: white;
+    border: 1px solid #17a2b8;
+}
+
+.flash-messages .alert-warning {
+    background-color: #ffc107;
+    color: black;
+    border: 1px solid #ffc107;
+}
+

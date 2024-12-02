@@ -1,0 +1,43 @@
+/* General styles (inherited from home.css) */
+body {
+    font-family: Arial, sans-serif;
+}
+
+/* Flash message styles (inherited from home.css) */
+.flash-messages {
+    margin: 20px 0;
+    padding: 10px;
+    border-radius: 5px;
+    width: 100%;
+}
+
+.flash-messages .alert {
+    padding: 15px;
+    font-size: 16px;
+    border-radius: 5px;
+    margin-bottom: 15px;
+}
+
+.flash-messages .alert-success {
+    background-color: #28a745;
+    color: white;
+    border: 1px solid #28a745;
+}
+
+.flash-messages .alert-danger {
+    background-color: #dc3545;
+    color: white;
+    border: 1px solid #dc3545;
+}
+
+.flash-messages .alert-info {
+    background-color: #17a2b8;
+    color: white;
+    border: 1px solid #17a2b8;
+}
+
+.flash-messages .alert-warning {
+    background-color: #ffc107;
+    color: black;
+    border: 1px solid #ffc107;
+}

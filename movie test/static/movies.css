@@ -133,3 +133,18 @@
     white-space: normal; /* Allow normal wrapping on hover */
     opacity: 0.5; /* Lower opacity of the description on hover */
 }
+
+.yellow-btn {
+    background-color: yellow;
+    color: black;
+    border: none;
+    padding: 10px;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: background-color 0.3s;
+}
+
+.yellow-btn:hover {
+    background-color: #ffcc00; /* Slightly darker yellow on hover */
+}
+
