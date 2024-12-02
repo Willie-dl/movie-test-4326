@@ -2,16 +2,17 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
+    <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='home.css') }}">
     <title>Movie App Home</title>
 </head>
 <body>
     <h1>Welcome to the Movie App</h1>
-    <p>Search for movies, add them to your watchlist, and keep track of your favorites.</p>
+    <p class="firstp">Search for movies, add them to your watchlist, and keep track of your favorites.</p>
 
     <!-- links -->
     <div>
         <a href="{{ url_for('movies') }}">View All Movies</a> | 
-        <a href="{{ url_for('home') }}">Home</a> |
+        <!--<a href="{{ url_for('home') }}">Home</a> | -->
         
         {% if 'user_id' in session %}
             <a href="{{ url_for('profile') }}">Profile</a> |
@@ -22,33 +23,37 @@
         {% endif %}
     </div>
 
-    <!--search box for OMDb -->
-    <form action="{{ url_for('search') }}" method="post">
-        <input type="text" name="query" placeholder="Search OMDb for a movie" required>
-        <button type="submit">Search</button>
-    </form>
+    <!-- Container for both forms -->
+    <div class="form-container">
+        <!-- Search box for OMDb -->
+        <form action="{{ url_for('search') }}" method="post">
+            <h2>Search IMDb for a movie</h2>
+            <input type="text" name="query" placeholder="e.g., Spiderman" required>
+            <button type="submit">Search</button>
+        </form>
 
-    <!--IMDb ID form to add or update a movie -->
-    <h2>Add or Update Movie by IMDb ID</h2>
+         <!-- show message -->
+         {% with messages = get_flashed_messages(with_categories=true) %}
+         {% if messages %}
+             <ul>
+                 {% for category, message in messages %}
+                     <li class="{{ category }}">{{ message }}</li>
+                 {% endfor %}
+             </ul>
+         {% endif %}
+         {% endwith %}
 
-    <!-- show message -->
-    {% with messages = get_flashed_messages(with_categories=true) %}
-    {% if messages %}
-        <ul>
-            {% for category, message in messages %}
-                <li class="{{ category }}">{{ message }}</li>
-            {% endfor %}
-        </ul>
-    {% endif %}
-    {% endwith %}
+        <!-- IMDb ID form to add or update a movie -->
+        <form action="{{ url_for('add_or_update_movie') }}" method="post">
+            <h2>Add or Update Movie by IMDb ID</h2>
+            <input type="text" id="movie_id" name="movie_id" placeholder="e.g., tt0111161" required>
+            <button type="submit">Add or Update Movie</button>
+        </form>
+    </div>
 
-    <form action="{{ url_for('add_or_update_movie') }}" method="post">
-        <label for="movie_id">Enter IMDb ID:</label>
-        <input type="text" id="movie_id" name="movie_id" placeholder="e.g., tt0111161" required>
-        <button type="submit">Add or Update Movie</button>
-    </form>
-
-    <p>Enter the IMDb ID of the movie you wish to add to the database or update if it already exists. This will fetch movie details from OMDb and store or update them in the app’s database.</p>
-
+    <p>Enter the IMDb ID of the movie you wish to add to the database or update if it already exists. 
+        This will fetch movie details from IMDb and store or update them in the app’s database.
+    </p>
+    
 </body>
 </html>

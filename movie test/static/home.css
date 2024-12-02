@@ -1,0 +1,114 @@
+/* General styles */
+body {
+    font-family: Arial, sans-serif;
+    background-color: #f0f4f8;
+    color: #333;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding-left: 20px; /* Add padding to the left */
+    padding-right: 20px; /* Add padding to the right */
+}
+
+/* Header styles */
+h1 {
+    color: #2c3e50;
+    margin-top: 20px;
+    font-size: 2.5em;
+    font-weight: bold;
+    text-align: center;
+}
+
+/* Paragraph style */
+p {
+    font-size: 1.2em;
+    color: #555;
+    text-align: center;
+}
+
+.firstp {
+    font-style: italic; /* Italicize the text */
+}
+
+/* Navigation links style */
+div a {
+    color: #3498db;
+    text-decoration: none;
+    margin: 0 10px;
+}
+
+div a:hover {
+    text-decoration: underline;
+}
+
+/* For Div1 and Div2 */
+.form-container {
+    display: flex;
+    gap: 20px;
+    justify-content: center;
+    width: 100%;
+    max-width: 1000px;
+    margin: 20px auto;
+}
+
+/* Form styles */
+form {
+    background-color: #ffffff;
+    padding: 20px 30px;
+    margin: 20px 0;
+    border-radius: 5px;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+    width: 100%;
+    max-width: 500px;
+    text-align: center;
+}
+
+form input[type="text"], form button {
+    font-size: 1em;
+    padding: 10px;
+    margin: 10px 0;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    width: 100%;
+    box-sizing: border-box;
+}
+
+form button {
+    background-color: #3498db;
+    color: #ffffff;
+    border: none;
+    cursor: pointer;
+}
+
+form button:hover {
+    background-color: #2980b9;
+}
+
+/* Flash message styles */
+.flash-messages {
+    margin: 20px 0;
+    color: #e74c3c;
+    font-weight: bold;
+}
+
+.flash-messages ul {
+    list-style: none;
+    padding: 0;
+}
+
+.flash-messages li {
+    background-color: #fbe9e7;
+    padding: 10px;
+    border: 1px solid #e57373;
+    border-radius: 5px;
+    margin: 5px 0;
+}
+
+/* Footer styles */
+footer {
+    margin-top: 20px;
+    font-size: 0.9em;
+    color: #777;
+}
