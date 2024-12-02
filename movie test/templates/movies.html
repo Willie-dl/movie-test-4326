@@ -15,6 +15,11 @@
             <button type="submit">Search OMDb</button>
         </form>
 
+        <!-- Back button -->
+        <div class="back-button">
+            <a href="{{ url_for('home') }}">Back to Home</a>
+        </div>
+
         <!--OMDb Search Results -->
         <div class="movies-list">
             {% for movie in movies %}
