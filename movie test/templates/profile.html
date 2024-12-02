@@ -2,23 +2,35 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
+    <link rel="stylesheet" href="{{ url_for('static', filename='profile.css') }}">
     <title>Your Profile</title>
 </head>
 <body>
     <h1>Your Profile</h1>
 
-    <!--watchlist -->
-    <section>
+    <!-- Flash messages -->
+    {% with messages = get_flashed_messages(with_categories=true) %}
+        {% if messages %}
+            <div class="flash-messages">
+                {% for category, message in messages %}
+                    <div class="alert alert-{{ category }}">
+                        {{ message }}
+                    </div>
+                {% endfor %}
+            </div>
+        {% endif %}
+    {% endwith %}
+
+    <!-- Profile Content -->
+    <section class="profile-section">
         <h2>Watchlist</h2>
         {% if watchlist %}
             <ul>
                 {% for title, movie_imdb_id in watchlist %}
                     <li>
-                        <!-- Link to movie detail using IMDb ID -->
                         <a href="{{ url_for('movie_detail', imdb_id=movie_imdb_id) }}">
                             <strong>{{ title }}</strong>
                         </a>
-                        <!-- Remove from Watchlist button -->
                         <form action="{{ url_for('remove_from_watchlist', imdb_id=movie_imdb_id) }}" method="post" style="display: inline;">
                             <button type="submit" class="btn btn-danger">Remove from Watchlist</button>
                         </form>
@@ -30,18 +42,15 @@
         {% endif %}
     </section>
 
-    <!--plan to Watch -->
-    <section>
+    <section class="profile-section">
         <h2>Plan to Watch</h2>
         {% if plan_to_watch %}
             <ul>
                 {% for title, movie_imdb_id in plan_to_watch %}
                     <li>
-                        <!-- Link to movie detail using IMDb ID -->
                         <a href="{{ url_for('movie_detail', imdb_id=movie_imdb_id) }}">
                             <strong>{{ title }}</strong>
                         </a>
-                        <!-- Remove from Plan to Watch button -->
                         <form action="{{ url_for('remove_from_plan', imdb_id=movie_imdb_id) }}" method="post" style="display: inline;">
                             <button type="submit" class="btn btn-danger">Remove from Plan to Watch</button>
                         </form>
@@ -53,14 +62,12 @@
         {% endif %}
     </section>
 
-    <!--reviews -->
-    <section>
+    <section class="profile-section">
         <h2>Your Reviews</h2>
         {% if reviews %}
             <ul>
                 {% for title, movie_imdb_id, review_text in reviews %}
                     <li>
-                        <!-- Link to movie detail using IMDb ID -->
                         <a href="{{ url_for('movie_detail', imdb_id=movie_imdb_id) }}">
                             <strong>{{ title }}</strong>
                         </a>: {{ review_text }}
@@ -75,7 +82,7 @@
         {% endif %}
     </section>
 
-    <!-- go back home -->
-    <a href="{{ url_for('home') }}">Back to Home</a>
+    <!-- Go back to home -->
+    <a href="{{ url_for('home') }}" class="btn btn-primary">Back to Home</a>
 </body>
 </html>

@@ -19,7 +19,7 @@ OMDB_API_KEY = 'bff6e1b4'
 OMDB_BASE_URL = 'http://www.omdbapi.com/'
 
 #database initilization
-@app.before_first_request
+@app.before_request
 def initialize_database():
     conn = sqlite3.connect('movies.db')
     cursor = conn.cursor()
@@ -119,7 +119,7 @@ def register():
         email = request.form.get('email')
         password = request.form.get('password')
         #hash the password with sha256
-        hashed_password = generate_password_hash(password, method='sha256')
+        hashed_password = generate_password_hash(password)
         #insert user into database
         conn = sqlite3.connect('movies.db')
         cursor = conn.cursor()
@@ -239,16 +239,23 @@ def add_to_watchlist(imdb_id):
 
     conn = sqlite3.connect('movies.db')
     cursor = conn.cursor()
-    #add to watchlist code
-    try:
-        cursor.execute("INSERT INTO watchlist (user_id, movie_imdb_id, category) VALUES (?, ?, ?)", (user_id, imdb_id, category))
-        conn.commit()
-        flash("Movie added to your list!", "success")
-    except sqlite3.Error as e:
-        flash("An error occurred while adding the movie to the watchlist.", "danger")
-    finally:
-        conn.close()
+   # Check if the movie is already in the user's watchlist for the selected category
+    cursor.execute("SELECT * FROM watchlist WHERE user_id = ? AND movie_imdb_id = ? AND category = ?", 
+                   (user_id, imdb_id, category))
+    existing_entry = cursor.fetchone()
 
+    if existing_entry:
+        flash("This movie is already in your watchlist.", "info")
+    else:
+        try:
+            cursor.execute("INSERT INTO watchlist (user_id, movie_imdb_id, category) VALUES (?, ?, ?)", 
+                           (user_id, imdb_id, category))
+            conn.commit()
+            flash("Movie added to your list!", "success")
+        except sqlite3.Error as e:
+            flash("An error occurred while adding the movie to the watchlist.", "danger")
+            
+    conn.close()
     return redirect(url_for('profile'))
 
 @app.route('/add_to_plan/<string:imdb_id>', methods=['POST'])
@@ -262,6 +269,15 @@ def add_to_plan(imdb_id):
     user_id = session['user_id']
     conn = sqlite3.connect('movies.db')
     cursor = conn.cursor()
+    
+    # Check if the movie is already in the user's "Plan to Watch" list
+    cursor.execute("SELECT * FROM watchlist WHERE user_id = ? AND movie_imdb_id = ? AND category = 'plan'", (user_id, imdb_id))
+    existing_movie = cursor.fetchone()
+    
+    if existing_movie:
+        flash("This movie is already in your Plan to Watch list.", "warning")
+        return redirect(url_for('profile'))  # or another appropriate redirect
+
     #Insert into the database to plan to watch 
     try:
         cursor.execute("INSERT INTO watchlist (user_id, movie_imdb_id, category) VALUES (?, ?, 'plan')", (user_id, imdb_id))
@@ -320,13 +336,9 @@ def remove_from_plan(imdb_id):
 
     return redirect(url_for('profile'))
 
-
-
-
 @app.route('/add_review/<string:imdb_id>', methods=['POST'])
 def add_review(imdb_id):
-    #Check if user is logged in
-    #Redirect to login page if not logged in
+    # Check if the user is logged in
     if 'user_id' not in session:
         flash("Please log in to add a review.", "danger")
         return redirect(url_for('login'))
@@ -336,14 +348,27 @@ def add_review(imdb_id):
     
     conn = sqlite3.connect('movies.db')
     cursor = conn.cursor()
-    cursor.execute("INSERT INTO reviews (user_id, movie_imdb_id, review_text) VALUES (?, ?, ?)", (user_id, imdb_id, review_text))
+    
+    # Check if the user has already reviewed this movie
+    cursor.execute("SELECT * FROM reviews WHERE user_id = ? AND movie_imdb_id = ?", (user_id, imdb_id))
+    existing_review = cursor.fetchone()
+
+    if existing_review:
+        # Flash a warning message if the user has already written a review
+        flash("Already have a review, please delete current review to write a new one or edit it", "info")
+        return redirect(url_for('movie_detail', imdb_id=imdb_id))  # Redirect back to the movie page
+        
+    else:
+        # Add the review if it doesn't already exist
+        cursor.execute("INSERT INTO reviews (user_id, movie_imdb_id, review_text) VALUES (?, ?, ?)", 
+                       (user_id, imdb_id, review_text))
+        flash("Review added successfully!", "success")
+
     conn.commit()
     conn.close()
     
-    flash("Review added successfully!", "success")
     return redirect(url_for('movie_detail', imdb_id=imdb_id))
-
-
+    
 
 #deletes reviews from movie page
 @app.route('/delete_review/<string:movie_id>', methods=['POST'])
