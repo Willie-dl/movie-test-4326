@@ -159,6 +159,7 @@ body {
 
 .add-review-section textarea {
     width: 100%;
+    max-width: calc(100% - 40px);
     height: 100px;
     margin-bottom: 15px;
     padding: 10px;
@@ -166,6 +167,7 @@ body {
     border-radius: 5px;
     resize: none;
 }
+
 
 /* Buttons */
 .btn {
