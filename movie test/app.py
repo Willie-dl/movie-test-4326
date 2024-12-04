@@ -192,6 +192,17 @@ def profile():
     user_id = session['user_id']
     conn = sqlite3.connect('movies.db')
     cursor = conn.cursor()
+
+    # Fetch the logged-in user's username
+    cursor.execute("SELECT username FROM users WHERE id = ?", (user_id,))
+    user_data = cursor.fetchone()
+
+    # If user is not found, you can return to login or handle it
+    if user_data:
+        user_name = user_data[0]
+    else:
+        flash("User not found.", "danger")
+        return redirect(url_for('login'))
     
     #get watchlist movies from ombd using their IMDB id 
     cursor.execute("SELECT movie_imdb_id FROM watchlist WHERE user_id = ? AND category = 'watchlist'", (user_id,))
@@ -240,7 +251,8 @@ def profile():
     conn.close()
 
     
-    return render_template('profile.html', 
+    return render_template('profile.html',
+                           user_name=user_name,  # Pass user_name to the template
                            watchlist=movie_titles,  
                            plan_to_watch=plan_movies, 
                            reviews=detailed_reviews) 
