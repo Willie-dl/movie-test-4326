@@ -1,4 +1,3 @@
-#team 4 
 #flask imports 
 from flask import Flask, render_template, request, redirect, url_for, flash, session
 import requests
@@ -98,42 +97,6 @@ def home():
     return render_template('home.html')
 
 # #login route
-# @app.route('/login', methods=['GET', 'POST'])
-# def login():
-#     if request.method == 'POST':
-#         #get username or email 
-#         identifier = request.form.get('identifier')
-#         password = request.form.get('password')
-#         #check if logged in prompt again if not
-#         if not identifier or not password:
-#             flash("Both email/username and password are required.", "danger")
-#             return redirect(url_for('login'))
-
-#         conn = sqlite3.connect('movies.db')
-#         cursor = conn.cursor()
-
-#         #Check if an email or a username is imputted in user input box
-#         #if it has @ = email
-#         #no @ = username
-#         if '@' in identifier:
-#             cursor.execute('SELECT * FROM users WHERE email = ?', (identifier,))
-#         else:
-#             cursor.execute('SELECT * FROM users WHERE username = ?', (identifier,))
-        
-#         user = cursor.fetchone()
-#         conn.close()
-#         #check if password matches 
-#         if user and check_password_hash(user[3], password):
-#             #store user id in session
-#             session['user_id'] = user[0]
-#             flash("Logged in successfully!", "success")
-#             return redirect(url_for('home'))
-#         else:
-#             #in case user inputs wrong credentials
-#             flash("Invalid credentials. Please try again.", "danger")
-    
-#     return render_template('login.html')
-
 @app.route('/login', methods=['GET', 'POST'])
 def login():
     if request.method == 'POST':
@@ -170,30 +133,6 @@ def login():
 
 
 # #register route
-# @app.route('/register', methods=['GET', 'POST'])
-# def register():
-#     if request.method == 'POST':
-#         username = request.form.get('username')
-#         email = request.form.get('email')
-#         password = request.form.get('password')
-#         #hash the password with sha256
-#         hashed_password = generate_password_hash(password)
-#         #insert user into database
-#         conn = sqlite3.connect('movies.db')
-#         cursor = conn.cursor()
-#         try:
-#             cursor.execute('INSERT INTO users (username, email, password) VALUES (?, ?, ?)',
-#                            (username, email, hashed_password))
-#             conn.commit()
-#             flash("Registration successful! Please log in.", "success")
-#             return redirect(url_for('login'))
-#         #check for duplicate user
-#         except sqlite3.IntegrityError:
-#             flash("Username or email already exists.", "danger")
-#         finally:
-#             conn.close()
-#     return render_template('register.html')
-
 @app.route('/register', methods=['GET', 'POST'])
 def register():
     if request.method == 'POST':
@@ -227,8 +166,6 @@ def register():
         finally:
             conn.close()
     return render_template('register.html')
-
-
 
 #logout route
 #disconnects session
@@ -306,16 +243,6 @@ def profile():
 
 
 # #search page
-# @app.route('/search', methods=['POST'])
-# def search():
-#     query = request.form.get('query')
-#     if query:
-#         return redirect(url_for('movies', query=query))
-#     #if user enters nothing
-#     else:
-#         flash("Please enter a search term.", "danger")
-#         return redirect(url_for('home'))
-
 @app.route('/search', methods=['POST'])
 def search():
     query = sanitize_input(request.form.get('query'))
@@ -449,42 +376,10 @@ def remove_from_plan(imdb_id):
 
     return redirect(url_for('profile'))
 
-# @app.route('/add_review/<string:imdb_id>', methods=['POST'])
-# def add_review(imdb_id):
-#     # Check if the user is logged in
-#     if 'user_id' not in session:
-#         flash("Please log in to add a review.", "danger")
-#         return redirect(url_for('login'))
-    
-#     user_id = session['user_id']
-#     review_text = request.form.get('review_text').strip()
-    
-#     conn = sqlite3.connect('movies.db')
-#     cursor = conn.cursor()
-    
-#     # Check if the user has already reviewed this movie
-#     cursor.execute("SELECT * FROM reviews WHERE user_id = ? AND movie_imdb_id = ?", (user_id, imdb_id))
-#     existing_review = cursor.fetchone()
-
-#     if existing_review:
-#         # Flash a warning message if the user has already written a review
-#         flash("Already have a review, please delete current review to write a new one or edit it", "info")
-#         return redirect(url_for('movie_detail', imdb_id=imdb_id))  # Redirect back to the movie page
-        
-#     else:
-#         # Add the review if it doesn't already exist
-#         cursor.execute("INSERT INTO reviews (user_id, movie_imdb_id, review_text) VALUES (?, ?, ?)", 
-#                        (user_id, imdb_id, review_text))
-#         flash("Review added successfully!", "success")
-
-#     conn.commit()
-#     conn.close()
-    
-#     return redirect(url_for('movie_detail', imdb_id=imdb_id))
-    
-
+#route to adding a review to a movie
 @app.route('/add_review/<string:imdb_id>', methods=['POST'])
 def add_review(imdb_id):
+    # Check if the user is logged in
     if 'user_id' not in session:
         flash("Please log in to add a review.", "danger")
         return redirect(url_for('login'))
@@ -505,12 +400,15 @@ def add_review(imdb_id):
     conn = sqlite3.connect('movies.db')
     cursor = conn.cursor()
 
+    # Check if the user has already reviewed this movie
     cursor.execute("SELECT * FROM reviews WHERE user_id = ? AND movie_imdb_id = ?", (user_id, imdb_id))
     existing_review = cursor.fetchone()
 
     if existing_review:
+        # Flash a warning message if the user has already written a review
         flash("You have already reviewed this movie.", "info")
     else:
+        # Add the review if it doesn't already exist
         cursor.execute("INSERT INTO reviews (user_id, movie_imdb_id, review_text) VALUES (?, ?, ?)",
                        (user_id, imdb_id, review_text))
         conn.commit()
@@ -544,39 +442,6 @@ def delete_review(movie_id):
 
 #shows movies list
 #connected with open movie database
-# @app.route('/movies')
-# def movies():
-#     query = request.args.get('query', 'Batman')
-#     page = request.args.get('page', 1, type=int)
-
-#     response = requests.get(OMDB_BASE_URL, params={
-#         'apikey': OMDB_API_KEY,
-#         's': query,
-#         'page': page
-#     })
-#     data = response.json()
-
-#     movies_list = []
-#     total_pages = 1
-
-#     if data.get('Response') == 'True':
-#         omdb_movies = data.get('Search', [])
-#         total_results = int(data.get('totalResults', 0))
-#         per_page = 10
-#         total_pages = (total_results + per_page - 1) // per_page
-
-#         for omdb_movie in omdb_movies:
-#             movies_list.append({
-#                 'Title': omdb_movie.get('Title'),
-#                 'Year': omdb_movie.get('Year'),
-#                 'Poster': omdb_movie.get('Poster'),
-#                 'imdbID': omdb_movie.get('imdbID')
-#             })
-#     #if search retuens nothing
-#     else:
-#         flash("No movies found.", "danger")
-
-#     return render_template('movies.html', movies=movies_list, page=page, total_pages=total_pages, query=query)
 @app.route('/movies')
 def movies():
     query = sanitize_input(request.args.get('query', 'Batman'))
@@ -722,49 +587,6 @@ def add_or_update_movie():
         return redirect(url_for('add_or_update_movie'))
 
     return render_template('add_or_update_movie.html')
-
-
-
-
-
-#debug stuff
-# @app.route('/debug_reviews')
-# def debug_reviews():
-#     conn = sqlite3.connect('movies.db')
-#     cursor = conn.cursor()
-#     cursor.execute("SELECT * FROM reviews")
-#     reviews = cursor.fetchall()
-#     conn.close()
-#     return f"All Reviews in database: {reviews}"
-
-# @app.route('/debug_all_reviews')
-# def debug_all_reviews():
-#     conn = sqlite3.connect('movies.db')
-#     cursor = conn.cursor()
-#     cursor.execute("SELECT users.username, reviews.movie_imdb_id, reviews.review_text FROM reviews JOIN users ON reviews.user_id = users.id")
-#     all_reviews = cursor.fetchall()
-#     conn.close()
-
-#     # Display all reviews for diagnostic purposes
-#     return f"All reviews in database: {all_reviews}"
-
-# @app.route('/debug_users')
-# def debug_users():
-#     conn = sqlite3.connect('movies.db')
-#     cursor = conn.cursor()
-#     cursor.execute("SELECT * FROM users")
-#     users = cursor.fetchall()
-#     conn.close()
-#     return f"Users in database: {users}"
-
-# @app.route('/debug_watchlist')
-# def debug_watchlist():
-#     conn = sqlite3.connect('movies.db')
-#     cursor = conn.cursor()
-#     cursor.execute("SELECT * FROM watchlist")
-#     watchlist = cursor.fetchall()
-#     conn.close()
-#     return f"Watchlist entries: {watchlist}"
 
 if __name__ == '__main__':
     app.run(host='127.0.0.1', port=5000, debug=True)
