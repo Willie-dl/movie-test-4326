@@ -7,24 +7,25 @@
 </head>
 <body>
     <div class="login-container">
-        <!-- Message display -->
-        {% with messages = get_flashed_messages(with_categories=true) %}
-            {% if messages %}
-                <ul>
-                    {% for category, message in messages %}
-                        <li class="{{ category }}">{{ message }}</li>
-                    {% endfor %}
-                </ul>
-            {% endif %}
-        {% endwith %}
-
         <h1>Register</h1>
         <form action="{{ url_for('register') }}" method="post">
             <input type="email" name="email" placeholder="Email" required>
             <input type="text" name="username" placeholder="Username" required>
             <input type="password" name="password" placeholder="Password" required>
+
+            <!-- Error message appears here -->
+            {% with messages = get_flashed_messages(with_categories=true) %}
+                {% for category, message in messages %}
+                    {% if category == 'danger' %}
+                        <p class="error-message">{{ message }}</p>
+                    {% endif %}
+                {% endfor %}
+            {% endwith %}
+
             <input type="submit" value="Register">
         </form>
+
+        <p>Already have an account? <a href="{{ url_for('login') }}">Login here</a></p>
 
         <!-- Back button -->
         <div class="back-button">
