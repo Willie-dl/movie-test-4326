@@ -6,6 +6,8 @@ import sqlite3
 from werkzeug.security import generate_password_hash, check_password_hash
 import re
 from markupsafe import escape
+from flask import jsonify
+
 
 app = Flask(__name__)
 #secret key
@@ -57,6 +59,8 @@ def initialize_database():
     ''')
 
     #Reviews
+
+    # Create the reviews table with the review_id as the primary key if it doesn't exist
     cursor.execute('''
         CREATE TABLE IF NOT EXISTS reviews (
             user_id INTEGER,
@@ -490,48 +494,110 @@ def movies():
 #movie detail page
 @app.route('/movie/<string:imdb_id>')
 def movie_detail(imdb_id):
-    #Check if user is logged in
-    #Redirect to login page if not logged in
+    # Check if user is logged in
     if 'user_id' not in session:
         flash("Please log in to view movie details.", "danger")
         return redirect(url_for('login'))
-    #get movie details using their IMDb ID
+    
+    # Get movie details using their IMDb ID
     response = requests.get(OMDB_BASE_URL, params={'apikey': OMDB_API_KEY, 'i': imdb_id})
 
-    movie_data = response.json()
+    # Check if the response status code is 200 (OK)
+    if response.status_code == 200:
+        try:
+            movie_data = response.json()  # Attempt to decode the JSON response
 
-    if movie_data.get('Response') == 'True':
-        title = movie_data.get('Title')
-        genre = movie_data.get('Genre')
-        release_year = movie_data.get('Year')
-        description = movie_data.get('Plot')
-        poster = movie_data.get('Poster', url_for('static', filename='placeholder.jpg'))
+            # Handle the case where OMDb response doesn't have a valid movie
+            if movie_data.get('Response') == 'True':
+                title = movie_data.get('Title')
+                genre = movie_data.get('Genre')
+                release_year = movie_data.get('Year')
+                description = movie_data.get('Plot')
+                poster = movie_data.get('Poster', url_for('static', filename='placeholder.jpg'))
 
-        #show reviews that users leave 
-        conn = sqlite3.connect('movies.db')
-        cursor = conn.cursor()
+                # Show reviews that users leave 
+                conn = sqlite3.connect('movies.db')
+                cursor = conn.cursor()
 
-        cursor.execute("""
-            SELECT users.username, reviews.review_text
-            FROM reviews
-            JOIN users ON reviews.user_id = users.id
-            WHERE reviews.movie_imdb_id = ?
-        """, (imdb_id,))
-        reviews = cursor.fetchall()
+                cursor.execute("""
+                    SELECT users.id, users.username, reviews.review_text
+                    FROM reviews
+                    JOIN users ON reviews.user_id = users.id
+                    WHERE reviews.movie_imdb_id = ?
+                """, (imdb_id,))
+                reviews = cursor.fetchall()
 
-        conn.close()
+                # Check if the logged-in user has already reviewed this movie
+                user_id = session['user_id']
+                cursor.execute("SELECT users.username, reviews.review_text FROM reviews JOIN users ON reviews.user_id = users.id WHERE reviews.user_id = ? AND reviews.movie_imdb_id = ?", (user_id, imdb_id))
+                existing_review = cursor.fetchone()
 
-        return render_template('movie_detail.html', movie={
-            'title': title,
-            'genre': genre,
-            'release_year': release_year,
-            'description': description,
-            'poster': poster,
-            'imdb_id': imdb_id
-        }, reviews=reviews)
+                conn.close()
 
-    flash("Movie not found in OMDb.", "danger")
-    return redirect(url_for('movies'))
+                # If the user has already reviewed
+                if existing_review:
+                    username = existing_review[0]  # Get the username
+                    review_text = existing_review[1]  # Get the review text
+                    # Remove the user's review from the list of reviews
+                    reviews = [r for r in reviews if r[1] != username]
+                    # Insert the current user's review at the top of the list
+                    reviews.insert(0, (user_id, username, review_text))
+
+                return render_template('movie_detail.html', movie={
+                    'title': title,
+                    'genre': genre,
+                    'release_year': release_year,
+                    'description': description,
+                    'poster': poster,
+                    'imdb_id': imdb_id
+                }, reviews=reviews, has_reviewed=bool(existing_review), user_id=user_id)
+
+            else:
+                flash("Movie not found in OMDb.", "danger")
+                return redirect(url_for('movies'))
+
+        except requests.exceptions.JSONDecodeError:
+            flash("Error decoding movie data from OMDb.", "danger")
+            return redirect(url_for('movies'))
+
+    else:
+        flash(f"Failed to retrieve movie details. Status code: {response.status_code}", "danger")
+        return redirect(url_for('movies'))
+    
+@app.route('/edit_review/<imdb_id>', methods=['POST'])
+def edit_review(imdb_id):
+    # Check if the user is logged in
+    if 'user_id' not in session:
+        flash('Please log in to edit your review.', 'error')
+        return redirect(url_for('login'))  # Redirect to login page if not logged in
+
+    user_id = session['user_id']
+    review_text = request.form.get('review_text')
+
+    # Validate the review text
+    if not review_text or len(review_text) > 500:
+        flash('Review must be under 500 characters.', 'error')
+        return redirect(url_for('movie_detail', imdb_id=imdb_id))  # Redirect to movie detail page if validation fails
+
+    # Update the review in the database
+    conn = sqlite3.connect('movies.db')
+    cursor = conn.cursor()
+
+    cursor.execute("""
+        UPDATE reviews 
+        SET review_text = ? 
+        WHERE user_id = ? 
+        AND movie_imdb_id = ?
+    """, (review_text, user_id, imdb_id))
+    conn.commit()
+
+    conn.close()
+
+    flash('Your review has been updated successfully!', 'success')
+    return redirect(url_for('movie_detail', imdb_id=imdb_id))
+
+
+
 
 #method to manually add movies to the database
 #only used if not found in OMDB database

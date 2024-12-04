@@ -1,13 +1,19 @@
-/* General styles (inherited from home.css) */
+/* General styles */
 body {
     font-family: Arial, sans-serif;
+    background-color: #f0f4f8;
+    color: #333;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 20px;
 }
 
-/* Flash message styles (inherited from home.css) */
+/* Flash messages */
 .flash-messages {
     margin: 20px 0;
-    padding: 10px;
-    border-radius: 5px;
     width: 100%;
 }
 
@@ -21,23 +27,163 @@ body {
 .flash-messages .alert-success {
     background-color: #28a745;
     color: white;
-    border: 1px solid #28a745;
 }
 
 .flash-messages .alert-danger {
     background-color: #dc3545;
     color: white;
-    border: 1px solid #dc3545;
 }
 
 .flash-messages .alert-info {
     background-color: #17a2b8;
     color: white;
-    border: 1px solid #17a2b8;
 }
 
 .flash-messages .alert-warning {
     background-color: #ffc107;
     color: black;
-    border: 1px solid #ffc107;
+}
+
+/* Movie details container */
+.movie-container {
+    width: 100%;
+    max-width: 900px;
+    margin: 20px auto;
+    padding: 20px;
+    background-color: #ffffff;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+    border-radius: 5px;
+}
+
+.movie-header h1 {
+    color: #2c3e50;
+    text-align: center;
+    font-size: 2.5em;
+}
+
+.movie-details {
+    display: flex;
+    gap: 20px;
+    margin-top: 20px;
+}
+
+.movie-poster {
+    width: 300px;
+    border-radius: 5px;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+}
+
+.movie-info {
+    flex: 1;
+}
+
+.movie-info p {
+    margin-bottom: 10px;
+    font-size: 1.2em;
+}
+
+/* Reviews section */
+.reviews-section ul {
+    list-style-type: none;
+    padding: 0;
+    margin: 20px 0;
+}
+
+.reviews-section li {
+    margin-bottom: 10px;
+    padding: 15px;
+    background-color: #f9f9f9;
+    border-radius: 5px;
+    position: relative; /* Allows absolute positioning of the button within the review */
+    transition: background-color 0.3s;
+}
+
+.review-container {
+    position: relative;
+}
+
+/* Highlight the current user's review */
+.current-user-review {
+    background-color: #3498db75 !important;
+    color: #2c3e50;
+}
+.current-user-review:hover {
+    background-color: #00000025 !important;
+
+}
+
+/* Edit button styles */
+.reviews-section li .btn-secondary {
+    display: none; /* Hide the button by default */
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%); /* Center the button within the review */
+    background-color: #38516a;
+    color: #f9f9f9;
+    padding: 10px 20px;
+    border-radius: 5px;
+}
+
+/* Show the button when hovering over the review */
+.reviews-section li:hover .btn-secondary {
+    display: inline-block; /* Show the button when the user hovers over the review */
+}
+
+/* Update Review button styles */
+.reviews-section li .update-button{
+    display: none; /* Hide the button by default */
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%); /* Center the button within the review */
+    background-color: #38516a;
+    color: #f9f9f9;
+    padding: 10px 20px;
+    border-radius: 5px;
+}
+/* Prevent button visibility during editing */
+.review-container.editing .btn-secondary {
+    display: none !important;
+}
+
+/* Normal button hover behavior */
+.reviews-section li:hover .update-button {
+    display: inline-block;
+}
+
+/* Add review section */
+.add-review-section {
+    margin-top: 30px;
+}
+
+.add-review-section textarea {
+    width: 100%;
+    height: 100px;
+    margin-bottom: 15px;
+    padding: 10px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    resize: none;
+}
+
+/* Buttons */
+.btn {
+    display: inline-block;
+    padding: 10px 20px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: background-color 0.3s;
+    text-decoration: none;
+    text-align: center;
+}
+
+.btn-primary {
+    background-color: #3498db;
+    color: white;
+}
+
+.btn-primary:hover {
+    background-color: #2980b9;
 }
