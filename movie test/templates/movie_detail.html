@@ -4,9 +4,33 @@
     <meta charset="UTF-8">
     <link rel="stylesheet" href="{{ url_for('static', filename='movie_detail.css') }}">
     <title>{{ movie.title }}</title>
+
+    <script>
+        function toggleEditForm(reviewId) {
+            var reviewContent = document.getElementById('review-content-' + reviewId);
+            var editForm = document.getElementById('edit-form-' + reviewId);
+            var editButton = document.getElementById('edit-button-' + reviewId);
+    
+            // Toggle visibility of review content and edit form
+            var isEditing = editForm.style.display === 'block';
+    
+            reviewContent.style.display = isEditing ? 'block' : 'none';
+            editForm.style.display = isEditing ? 'none' : 'block';
+            editButton.style.display = isEditing ? 'inline-block' : 'none';
+    
+            // If editing, disable the hover effect by adding a class
+            var reviewContainer = document.querySelector('.review-container');
+            if (isEditing) {
+                reviewContainer.classList.remove('editing');
+            } else {
+                reviewContainer.classList.add('editing');
+            }
+        }
+    </script>
+    
+
 </head>
 <body>
-
     <!-- Flash messages -->
     {% with messages = get_flashed_messages(with_categories=true) %}
         {% if messages %}
@@ -20,31 +44,58 @@
         {% endif %}
     {% endwith %}
 
-    <h1>{{ movie.title }}</h1>
-    <img src="{{ movie.poster }}" alt="{{ movie.title }}">
-    <p><strong>Genre:</strong> {{ movie.genre }}</p>
-    <p><strong>Release Year:</strong> {{ movie.release_year }}</p>
-    <p><strong>Description:</strong> {{ movie.description }}</p>
+    <!-- Main content -->
+    <div class="movie-container">
+        <div class="movie-header">
+            <h1>{{ movie.title }}</h1>
+        </div>
+        <div class="movie-details">
+            <img src="{{ movie.poster }}" alt="{{ movie.title }}" class="movie-poster">
+            <div class="movie-info">
+                <p><strong>Genre:</strong> {{ movie.genre }}</p>
+                <p><strong>Release Year:</strong> {{ movie.release_year }}</p>
+                <p><strong>Description:</strong> {{ movie.description }}</p>
+            </div>
+        </div>
 
-    <h2>User Reviews</h2>
+        <section class="reviews-section">
+            <h2>User Reviews</h2>
+            {% if reviews and reviews|length > 0 %}
+                <ul>
+                    {% for review_user_id, username, review_text in reviews %}
+                        <li class="review-container {% if review_user_id == user_id %}current-user-review{% endif %}">
+                            <div class="review-content" id="review-content-{{ review_user_id }}">
+                                <strong>{{ username }}</strong>: {{ review_text }}
+                            </div>
+                            <!-- Display edit button for the logged-in user's review -->
+                            {% if review_user_id == user_id %}
+                                <button class="btn btn-secondary" 
+                                        id="edit-button-{{ review_user_id }}"
+                                        onclick="toggleEditForm('{{ review_user_id }}')">Edit Review</button>
+                                <form method="POST" action="{{ url_for('edit_review', imdb_id=movie.imdb_id, review_id=review_user_id) }}" style="display: none;" id="edit-form-{{ review_user_id }}">
+                                    <textarea name="review_text" required>{{ review_text }}</textarea>
+                                    <button type="submit" class="update-button">Update Review</button>
+                                </form>
+                            {% endif %}
+                        </li>
+                    {% endfor %}
+                </ul>
+            {% else %}
+                <p>No reviews yet. Be the first to review!</p>
+            {% endif %}
 
-    <!-- reviews -->
-    {% if reviews and reviews|length > 0 %}
-        <ul>
-            {% for review in reviews %}
-                <li><strong>{{ review[0] }}:</strong> {{ review[1] }}</li>
-            {% endfor %}
-        </ul>
-    {% else %}
-        <p>No reviews yet. Be the first to add one!</p>
-    {% endif %}
+            {% if not has_reviewed %}
+                <section class="add-review-section">
+                    <h2>Add Your Review</h2>
+                    <form action="{{ url_for('add_review', imdb_id=movie.imdb_id) }}" method="post">
+                        <textarea name="review_text" placeholder="Write your review here" required></textarea>
+                        <button type="submit" class="btn btn-primary">Submit Review</button>
+                    </form>
+                </section>
+            {% endif %}
+        </section>
+    </div>
 
-    <h2>Add Your Review</h2>
-    <form action="{{ url_for('add_review', imdb_id=movie.imdb_id) }}" method="post">
-        <textarea name="review_text" placeholder="Write your review here" required></textarea>
-        <button type="submit">Submit Review</button>
-    </form>
-
-    <a href="{{ url_for('movies') }}">Back to Movie List</a>
+    <a href="{{ url_for('movies') }}" class="btn btn-primary">Back to Movie List</a>
 </body>
 </html>
