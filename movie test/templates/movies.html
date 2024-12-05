@@ -9,13 +9,6 @@
     <div class="container">
         <h1>Featured Movies</h1>
 
-        <!--OMDb Search Form -->
-        <form action="{{ url_for('movies') }}" method="get">
-            <input type="text" name="query" placeholder="Search OMDb for a movie" value="{{ query }}" required>
-            <button type="submit">Search OMDb</button>
-        </form>
-
-
         <!-- links -->
         <div> 
             <a href="{{ url_for('home') }}">Home</a> |
@@ -27,6 +20,14 @@
                 <a href="{{ url_for('login') }}">Login</a> | 
                 <a href="{{ url_for('register') }}">Register</a>
             {% endif %}
+        </div>
+
+        <!--OMDb Search Form -->
+        <div class="form-container">
+            <form action="{{ url_for('movies') }}" method="get" class="search-form">
+                <input type="text" name="query" placeholder="Search OMDb for a movie" value="{{ query }}" required>
+                <button type="submit">Search OMDb</button>
+            </form>
         </div>
 
         <!--OMDb Search Results -->
@@ -45,16 +46,18 @@
                     <img src="{{ url_for('static', filename='placeholder.jpg') }}" alt="No image available" class="movie-image">
                 {% endif %}
 
-                <!--button to add the movie to the watchlist -->
-                <form action="{{ url_for('add_to_watchlist', imdb_id=movie.imdbID) }}" method="post">
-                    <input type="hidden" name="category" value="watchlist">  <!-- Category set to 'watchlist' -->
-                    <button type="submit" class="add-btn">Add to Watchlist</button>
-                </form>
+                <div class="action-buttons">
+                    <!--button to add the movie to the watchlist -->
+                    <form action="{{ url_for('add_to_watchlist', imdb_id=movie.imdbID) }}" method="post">
+                        <input type="hidden" name="category" value="watchlist">  <!-- Category set to 'watchlist' -->
+                        <button type="submit" class="add-btn">Add to Watchlist</button>
+                    </form>
 
-                <!-- button to add the movie to the plan to watch list -->
-                <form action="{{ url_for('add_to_plan', imdb_id=movie.imdbID) }}" method="post">
-                    <button type="submit" class="add-btn">Add to Plan to Watch</button>
-                </form>
+                    <!-- button to add the movie to the plan to watch list -->
+                    <form action="{{ url_for('add_to_plan', imdb_id=movie.imdbID) }}" method="post">
+                        <button type="submit" class="add-btn">Add to Plan to Watch</button>
+                    </form>
+                </div>
             </div>
             {% endfor %}
         </div>

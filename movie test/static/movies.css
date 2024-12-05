@@ -1,39 +1,94 @@
-/* Basic styling for the container */
-.container {
-    max-width: 1200px;
-    margin: 0 auto;
+/* General styles */
+body {
+    font-family: Arial, sans-serif;
+    background-color: #f0f4f8;
+    color: #333;
+    margin: 0;
     padding: 20px;
+    text-align: center;
 }
 
-/* Styling for the movie list */
+/* Header styling */
+h1 {
+    color: #2c3e50;
+    font-size: 2.5em;
+    margin-bottom: 20px;
+}
+
+/* Navigation links */
+.links a {
+    color: #3498db;
+    text-decoration: none;
+    margin: 0 10px;
+}
+
+.links a:hover {
+    text-decoration: underline;
+}
+
+/* Form container styling */
+.form-container {
+    margin: 20px auto;
+    max-width: 600px;
+    text-align: center;
+}
+
+/* Search form styling for inline layout */
+.search-form {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 10px; /* Space between input and button */
+}
+
+.search-form input[type="text"] {
+    font-size: 1em;
+    padding: 10px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    width: 70%; /* Adjust width as needed */
+    box-sizing: border-box;
+}
+
+.search-form button {
+    font-size: 1em;
+    padding: 10px 20px;
+    background-color: #3498db;
+    color: #ffffff;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: background-color 0.3s, transform 0.2s;
+}
+
+.search-form button:hover {
+    background-color: #2980b9;
+    transform: scale(1.05);
+}
+
+.search-form button:active {
+    background-color: #1d5f8a;
+    transform: scale(0.95);
+}
+
+
+/* Movies list styling */
 .movies-list {
+    padding: 30px;
     display: flex;
     flex-wrap: wrap;
-    gap: 20px; /* Space between cards */
+    gap: 20px;
+    justify-content: left;
 }
 
-/* Individual movie card styling */
+/* Movie card styling */
 .movie-card {
-    background-color: #fff;
-    border-radius: 10px;
-    box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.1);
-    width: 220px; /* Fixed width for uniformity */
+    background-color: #ffffff;
     padding: 15px;
-    text-align: center;
-    position: relative;
-    display: flex;
-    flex-direction: column; /* Stack items vertically */
-}
-
-/* Genre styling */
-.movie-genre {
-    background-color: #007BFF;
-    color: #fff;
-    padding: 5px;
     border-radius: 5px;
-    position: absolute;
-    top: 10px;
-    left: 10px;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+    width: 220px;
+    text-align: center;
 }
 
 /* Image styling */
@@ -44,107 +99,45 @@
     margin-bottom: 10px;
 }
 
-/* Favorites button styling */
-.favorite-btn {
-    background-color: #28a745;
+/* Action buttons */
+.action-buttons {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+/* Button styling */
+.action-buttons .add-btn {
+    background-color: #38516a;
+    color: #f9f9f9;
+    padding: 10px 20px;
+    border-radius: 5px;
+    transition: background-color 0.3s, transform 0.2s;
+    cursor: pointer;
+    font-size: 1em;
+    border: none;
+}
+
+/* Hover effect for buttons */
+.action-buttons .add-btn:hover {
+    background-color: #2980b9;
+    transform: scale(1.05); /* Slightly enlarges the button on hover */
     color: white;
-    border: none;
-    padding: 10px;
-    border-radius: 5px;
-    cursor: pointer;
-    transition: background-color 0.3s;
 }
 
-.favorite-btn:hover {
-    background-color: #218838;
-}
-
-/* Rating stars styling */
-.rating {
-    margin-top: 10px;
-    display: flex; /* Use flexbox to align items horizontally */
-    align-items: center; /* Vertically center the items */
-}
-
-.rate-label {
-    margin-right: 10px; /* Space between the label and stars */
-    color: lightgray; /* Lighter color for the label */
-    font-weight: 500; /* Optional: make the text slightly bolder */
-}
-
-.stars {
-    cursor: pointer;
-}
-
-.star {
-    font-size: 24px; /* Size of stars */
-    color: lightgrey; /* Default star color */
-}
-
-.star.selected {
-    color: gold; /* Color for selected stars */
-}
-
-.description-container {
-    position: relative; /* Allows for absolute positioning of child elements */
-    flex-grow: 1; /* Allow the description to grow */
-}
-
-/* Movie description styling with line clamping */
-.movie-description {
-    display: block; /* Normal block display */
-    overflow: hidden; /* Hide overflow */
-    text-overflow: ellipsis; /* Show ellipsis for overflow */
-    line-height: 1.5; /* Set line height */
-    max-height: 4.5em; /* Max height to accommodate 3 lines */
-    margin-bottom: 10px; /* Space after description */
-    transition: opacity 0.3s; /* Smooth transition for opacity */
-}
-
-/* Add space after the favorites button */
-.favorites-rating {
-    margin-top: 15px; /* Space between description and favorites button */
-}
-
-/* Edit button styling */
-.edit-btn {
-    background-color: #6a6666; /* Dark gray background */
+/* Active state for buttons */
+.action-buttons .add-btn:active {
+    background-color: #1d5f8a;
+    transform: scale(0.95); /* Shrinks slightly on click */
     color: white;
-    padding: 5px 10px;
-    border: none;
-    border-radius: 5px;
-    cursor: pointer;
-    text-decoration: none;
-    position: absolute; /* Positioned over the description */
-    top: 50%; /* Center vertically */
-    left: 50%; /* Center horizontally */
-    transform: translate(-50%, -50%); /* Shift back by half its width and height to center */
-    opacity: 0; /* Initially hidden */
-    transition: opacity 0.3s; /* Smooth transition */
 }
 
-.description-container:hover .edit-btn {
-    opacity: 1; /* Show the edit button on hover */
-}
 
-.description-container:hover .movie-description {
-    /*max-height: none; /* Remove max height on hover */
-    /*overflow: visible; /* Show all text when hovered */
-    white-space: normal; /* Allow normal wrapping on hover */
-    opacity: 0.5; /* Lower opacity of the description on hover */
+/* Pagination styling */
+.pagination {
+    margin-top: 20px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 20px;
 }
-
-.yellow-btn {
-    background-color: yellow;
-    color: black;
-    border: none;
-    padding: 10px;
-    border-radius: 5px;
-    cursor: pointer;
-    transition: background-color 0.3s;
-}
-
-.yellow-btn:hover {
-    background-color: #ffcc00; /* Slightly darker yellow on hover */
-}
-
