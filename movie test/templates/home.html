@@ -47,15 +47,13 @@
 
         <!-- IMDb ID form to add or update a movie -->
         <form action="{{ url_for('add_or_update_movie') }}" method="post">
-            <h2>Add or Update Movie by IMDb ID</h2>
+            <h2>Add Movie by IMDb ID</h2>
             <input type="text" id="movie_id" name="movie_id" placeholder="e.g., tt0111161" required>
             <button type="submit">Add Movie</button>
         </form>
     </div>
 
-    <p>Enter the IMDb ID of the movie you wish to add to the database or update if it already exists. 
-        This will fetch movie details from IMDb and store or update them in the app’s database.
-    </p>
+    <p>Enter the IMDb ID of the movie you wish to add to the database. </p>
     
 </body>
 </html>
