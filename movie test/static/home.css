@@ -8,8 +8,8 @@ body {
     display: flex;
     flex-direction: column;
     align-items: center;
-    padding-left: 20px; /* Add padding to the left */
-    padding-right: 20px; /* Add padding to the right */
+    padding-left: 20px;
+    padding-right: 20px;
 }
 
 /* Header styles */
@@ -87,7 +87,6 @@ form button:hover {
 }
 
 /* Flash message styles */
-/* Style for flash messages */
 .flash-messages {
     margin: 20px 0;
     padding: 10px;
