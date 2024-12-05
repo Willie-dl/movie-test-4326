@@ -623,7 +623,7 @@ def add_or_update_movie():
         #validate IMDb ID format
         if not movie_id or not re.match(r'^tt\d{7,8}$', movie_id):
             flash("Invalid IMDb ID. Please provide a valid ID like 'tt0111161'.", "danger")
-            return redirect(url_for('add_or_update_movie'))
+            return redirect(url_for('home'))
 
         conn = sqlite3.connect('movies.db')
         cursor = conn.cursor()
@@ -662,9 +662,11 @@ def add_or_update_movie():
             flash("Failed to fetch movie details. Please try again later.", "danger")
 
         conn.close()
-        return redirect(url_for('add_or_update_movie'))
 
-    return render_template('add_or_update_movie.html')
+        # After processing, return to the home page with flash messages
+        return redirect(url_for('home'))
+
+    return '', 204  # In case the request method is not POST, do nothing
 
 if __name__ == '__main__':
     app.run(host='127.0.0.1', port=5000, debug=True)
