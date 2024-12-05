@@ -142,6 +142,7 @@ body {
     padding: 10px 20px;
     border-radius: 5px;
 }
+
 /* Prevent button visibility during editing */
 .review-container.editing .btn-secondary {
     display: none !important;

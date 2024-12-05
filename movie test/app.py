@@ -6,8 +6,6 @@ import sqlite3
 from werkzeug.security import generate_password_hash, check_password_hash
 import re
 from markupsafe import escape
-from flask import jsonify
-
 
 app = Flask(__name__)
 #secret key
@@ -76,31 +74,31 @@ def initialize_database():
 
 
 def sanitize_input(input_text):
-    #Sanitize user input to prevent harmful inputs
+    # Sanitize user input to prevent harmful inputs
     if not input_text:
         return ''
-    #Remove SQL meta-characters 
+    # Remove SQL meta-characters 
     sanitized = re.sub(r'[;\'\"--]', '', input_text)
     return escape(sanitized.strip())
 
 
 
 def validate_username(username):
-    #Validate username to allow only alphanumeric and underscores
+    # Validate username to allow only alphanumeric and underscores
     return bool(re.match(r'^[a-zA-Z0-9_]+$', username)) and len(username) <= 50
 
 
 def validate_email(email):
-    #Validate email format
+    # Validate email format
     return bool(re.match(r'^[^@]+@[^@]+\.[^@]+$', email)) and len(email) <= 100
 
 
-#home route
+# home route
 @app.route('/')
 def home():
     return render_template('home.html')
 
-# #login route
+# login route
 @app.route('/login', methods=['GET', 'POST'])
 def login():
     if request.method == 'POST':
@@ -171,22 +169,22 @@ def register():
             conn.close()
     return render_template('register.html')
 
-#logout route
-#disconnects session
+# logout route
+# disconnects session
 @app.route('/logout')
 def logout():
     session.pop('user_id', None)
     flash("You have been logged out.", "info")
     return redirect(url_for('home'))
 
-#profile route
+# profile route
 @app.route('/profile')
 def profile():
     # Check if user is logged in
     if 'user_id' not in session:
         flash("Please log in to access your profile.", "danger")
-        #Redirect to login page if not logged in
-        #prevents non registered useres from adding to database
+        # Redirect to login page if not logged in
+        # prevents non registered useres from adding to database
         return redirect(url_for('login')) 
     
     user_id = session['user_id']
@@ -204,23 +202,23 @@ def profile():
         flash("User not found.", "danger")
         return redirect(url_for('login'))
     
-    #get watchlist movies from ombd using their IMDB id 
+    # get watchlist movies from ombd using their IMDB id 
     cursor.execute("SELECT movie_imdb_id FROM watchlist WHERE user_id = ? AND category = 'watchlist'", (user_id,))
     watchlist = cursor.fetchall()
 
-    #get plan to watch list
+    # get plan to watch list
     cursor.execute("SELECT movie_imdb_id FROM watchlist WHERE user_id = ? AND category = 'plan'", (user_id,))
     plan_to_watch = cursor.fetchall()
 
-    #get reviews with movie ID
+    # get reviews with movie ID
     cursor.execute("SELECT movie_imdb_id, review_text FROM reviews WHERE user_id = ?", (user_id,))
     reviews = cursor.fetchall()
 
-    #Initialize lists
+    # Initialize lists
     movie_titles = []
     detailed_reviews = []
 
-    #get movie titles for watchlist
+    # get movie titles for watchlist
     for movie_id in watchlist:
         response = requests.get(OMDB_BASE_URL, params={'apikey': OMDB_API_KEY, 'i': movie_id[0]})
         movie_data = response.json()
@@ -230,7 +228,7 @@ def profile():
         else:
             movie_titles.append(("Unknown Title", movie_id[0]))  # Handle case where movie data is not found
 
-    #get movie titles and reviews for Plan to Watch
+    # get movie titles and reviews for Plan to Watch
     plan_movies = []
     for movie_id in plan_to_watch:
         response = requests.get(OMDB_BASE_URL, params={'apikey': OMDB_API_KEY, 'i': movie_id[0]})
@@ -241,7 +239,7 @@ def profile():
         else:
             plan_movies.append(("Unknown Title", movie_id[0]))  # Handle case where movie data is not found
 
-    #get detailed reviews with movie titles
+    # get detailed reviews with movie titles
     for movie_id, review_text in reviews:
         response = requests.get(OMDB_BASE_URL, params={'apikey': OMDB_API_KEY, 'i': movie_id})
         movie_data = response.json()
@@ -256,7 +254,6 @@ def profile():
                            watchlist=movie_titles,  
                            plan_to_watch=plan_movies, 
                            reviews=detailed_reviews) 
-
 
 # #search page
 @app.route('/search', methods=['POST'])
@@ -277,11 +274,11 @@ def search():
 
 
 
-#add to watchlist button
+# adding movies to watchlist
 @app.route('/add_to_watchlist/<string:imdb_id>', methods=['POST'])
 def add_to_watchlist(imdb_id):
-    #Check if user is logged in
-    #Redirect to login page if not logged in
+    # Check if user is logged in
+    # Redirect to login page if not logged in
     if 'user_id' not in session:
         flash("Please log in to add movies to your watchlist.", "danger")
         return redirect(url_for('login'))
@@ -314,10 +311,11 @@ def add_to_watchlist(imdb_id):
     conn.close()
     return redirect(url_for('profile'))
 
+# adding movies to plan to watch list
 @app.route('/add_to_plan/<string:imdb_id>', methods=['POST'])
 def add_to_plan(imdb_id):
-    #Check if user is logged in
-    #Redirect to login page if not logged in
+    # Check if user is logged in
+    # Redirect to login page if not logged in
     if 'user_id' not in session:
         flash("Please log in to add movies to your Plan to Watch list.", "danger")
         return redirect(url_for('login'))
@@ -346,18 +344,20 @@ def add_to_plan(imdb_id):
 
     return redirect(url_for('profile'))
 
-
+# to remove movies from watchlist
 @app.route('/remove_from_watchlist/<string:imdb_id>', methods=['POST'])
 def remove_from_watchlist(imdb_id):
-    #Check if user is logged in
-    #Redirect to login page if not logged in
+    # Check if user is logged in
+    # Redirect to login page if not logged in
     if 'user_id' not in session:
         flash("Please log in to manage your Watchlist.", "danger")
         return redirect(url_for('login'))
-    #gets user id to remove the movie from list  they made
+    
+    # gets user id to remove the movie from list  they made
     user_id = session['user_id']
     conn = sqlite3.connect('movies.db')
     cursor = conn.cursor()
+
     try:
         cursor.execute("DELETE FROM watchlist WHERE user_id = ? AND movie_imdb_id = ? AND category = 'watchlist'", (user_id, imdb_id))
         conn.commit()
@@ -369,18 +369,20 @@ def remove_from_watchlist(imdb_id):
 
     return redirect(url_for('profile'))
 
-
+# to remove movies from plant to watch
 @app.route('/remove_from_plan/<string:imdb_id>', methods=['POST'])
 def remove_from_plan(imdb_id):
-    #Check if user is logged in
-    #Redirect to login page if not logged in
+    # Check if user is logged in
+    # Redirect to login page if not logged in
     if 'user_id' not in session:
         flash("Please log in to manage your Plan to Watch list.", "danger")
         return redirect(url_for('login'))
+    
     #gets user id to remove the movie from list
     user_id = session['user_id']
     conn = sqlite3.connect('movies.db')
     cursor = conn.cursor()
+
     try:
         cursor.execute("DELETE FROM watchlist WHERE user_id = ? AND movie_imdb_id = ? AND category = 'plan'", (user_id, imdb_id))
         conn.commit()
@@ -392,7 +394,7 @@ def remove_from_plan(imdb_id):
 
     return redirect(url_for('profile'))
 
-#route to adding a review to a movie
+# route to adding a review to a movie
 @app.route('/add_review/<string:imdb_id>', methods=['POST'])
 def add_review(imdb_id):
     # Check if the user is logged in
@@ -435,11 +437,11 @@ def add_review(imdb_id):
 
 
 
-#deletes reviews from movie page
+# deletes reviews from movie page
 @app.route('/delete_review/<string:movie_id>', methods=['POST'])
 def delete_review(movie_id):
-    #Check if user is logged in
-    #Redirect to login page if not logged in
+    # Check if user is logged in
+    # Redirect to login page if not logged in
     if 'user_id' not in session:
         flash("Please log in to delete a review.", "danger")
         return redirect(url_for('login'))
@@ -456,8 +458,8 @@ def delete_review(movie_id):
     return redirect(url_for('profile'))
 
 
-#shows movies list
-#connected with open movie database
+# shows movies list
+# connected with open movie database
 @app.route('/movies')
 def movies():
     query = sanitize_input(request.args.get('query', 'Batman'))
@@ -503,7 +505,7 @@ def movies():
 
     return render_template('movies.html', movies=movies_list, page=page, total_pages=total_pages, query=query)
 
-#movie detail page
+# movie detail page
 @app.route('/movie/<string:imdb_id>')
 def movie_detail(imdb_id):
     # Check if user is logged in
@@ -575,7 +577,8 @@ def movie_detail(imdb_id):
     else:
         flash(f"Failed to retrieve movie details. Status code: {response.status_code}", "danger")
         return redirect(url_for('movies'))
-    
+
+# editing to update existing reviews    
 @app.route('/edit_review/<imdb_id>', methods=['POST'])
 def edit_review(imdb_id):
     # Check if the user is logged in
@@ -611,16 +614,16 @@ def edit_review(imdb_id):
 
 
 
-#method to manually add movies to the database
-#only used if not found in OMDB database
-#not really needed unless its some obscure film or some very new fil
-#essentially another search 
+# method to manually add movies to the database
+# only used if not found in OMDB database
+# not really needed unless its some obscure film or some very new fil
+# essentially another search 
 @app.route('/add_or_update_movie', methods=['POST', 'GET'])
 def add_or_update_movie():
     if request.method == 'POST':
         movie_id = request.form.get('movie_id')
 
-        #validate IMDb ID format
+        # validate IMDb ID format
         if not movie_id or not re.match(r'^tt\d{7,8}$', movie_id):
             flash("Invalid IMDb ID. Please provide a valid ID like 'tt0111161'.", "danger")
             return redirect(url_for('home'))
@@ -628,16 +631,16 @@ def add_or_update_movie():
         conn = sqlite3.connect('movies.db')
         cursor = conn.cursor()
 
-        #Check if the movie already exists
+        # Check if the movie already exists
         cursor.execute("SELECT id FROM movies WHERE movie_imdb_id = ?", (movie_id,))
         existing_movie = cursor.fetchone()
-        #Redirect to the movie details page if it exists already
+        # Redirect to the movie details page if it exists already
         if existing_movie:
             flash(f"The movie already exists. Redirecting to its details page.", "info")
             conn.close()
             return redirect(url_for('movie_detail', imdb_id=movie_id))
 
-        #get movie details from OMDb
+        # get movie details from OMDb
         response = requests.get(OMDB_BASE_URL, params={'apikey': OMDB_API_KEY, 'i': movie_id})
         if response.ok:
             movie_data = response.json()
@@ -649,7 +652,7 @@ def add_or_update_movie():
                 description = movie_data.get('Plot')
                 poster = movie_data.get('Poster')
 
-                #Add the movie to the database
+                # Add the movie to the database
                 cursor.execute("""
                     INSERT INTO movies (movie_imdb_id, title, genre, release_year, description, poster)
                     VALUES (?, ?, ?, ?, ?, ?)
